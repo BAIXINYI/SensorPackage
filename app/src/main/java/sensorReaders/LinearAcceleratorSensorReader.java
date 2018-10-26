@@ -131,11 +131,14 @@ public class LinearAcceleratorSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            linearAcceleratorFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                linearAcceleratorFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

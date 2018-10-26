@@ -133,11 +133,14 @@ public class MagnetometerSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            magnetometerFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                magnetometerFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

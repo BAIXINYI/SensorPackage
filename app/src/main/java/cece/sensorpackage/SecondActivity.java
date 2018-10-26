@@ -60,25 +60,25 @@ public class SecondActivity extends AppCompatActivity {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         mMagnetometerSensorReader = new MagnetometerSensorReader(true,
-                                                                                            sensorManager,
-                                                                                            magnetometerDisplay,
-                                                                                            sampleRate,
-                                                                                            displayRate);
+                                                                sensorManager,
+                                                                magnetometerDisplay,
+                                                                sampleRate,
+                                                                displayRate);
         mOrientationSensorReader = new OrientationSensorReader(true,
-                                                                                        sensorManager,
-                                                                                        orientationDisplay,
-                                                                                        sampleRate,
-                                                                                        displayRate);
+                                                                sensorManager,
+                                                                orientationDisplay,
+                                                                sampleRate,
+                                                                displayRate);
         mLinearAcceleratorSensorReader = new LinearAcceleratorSensorReader(true,
-                                                                                                        sensorManager,
-                                                                                                        linearAcceleratorDisplay,
-                                                                                                        sampleRate,
-                                                                                                        displayRate);
+                                                                            sensorManager,
+                                                                            linearAcceleratorDisplay,
+                                                                            sampleRate,
+                                                                            displayRate);
         mLightSensorReader = new LightSensorReader(true,
-                                                                        sensorManager,
-                                                                        lightDisplay,
-                                                                        sampleRate,
-                                                                        displayRate);
+                                                    sensorManager,
+                                                    lightDisplay,
+                                                    sampleRate,
+                                                    displayRate);
 
         mMagnetometerSensorReader.open();
         mOrientationSensorReader.open();
@@ -115,6 +115,10 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void go2FirstActivity(View view) {
+        mMagnetometerSensorReader.close();
+        mOrientationSensorReader.close();
+        mLinearAcceleratorSensorReader.close();
+        mLightSensorReader.close();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

@@ -131,11 +131,14 @@ public class LightSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            lightSensorFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                lightSensorFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

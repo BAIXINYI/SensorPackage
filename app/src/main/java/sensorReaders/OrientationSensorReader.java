@@ -131,11 +131,14 @@ public class OrientationSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            orientationSensorFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                orientationSensorFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

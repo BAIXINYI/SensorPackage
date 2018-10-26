@@ -131,11 +131,14 @@ public class RotationalVectorSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            rotationalVectorFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                rotationalVectorFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

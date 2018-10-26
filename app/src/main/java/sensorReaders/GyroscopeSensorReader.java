@@ -131,11 +131,14 @@ public class GyroscopeSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            gyroscopeFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                gyroscopeFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

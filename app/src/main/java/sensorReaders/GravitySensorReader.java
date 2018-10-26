@@ -131,11 +131,14 @@ public class GravitySensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            gravityFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                gravityFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         mSensorManager.unregisterListener(this);
     }
 

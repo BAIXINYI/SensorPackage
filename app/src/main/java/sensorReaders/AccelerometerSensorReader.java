@@ -133,10 +133,12 @@ public class AccelerometerSensorReader implements SensorEventListener {
     }
 
     public void close() {
-        try {
-            accelerometerFileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(!onlyDisplay) {
+            try {
+                accelerometerFileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         mSensorManager.unregisterListener(this);
     }

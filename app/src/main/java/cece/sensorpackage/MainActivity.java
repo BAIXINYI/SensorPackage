@@ -26,14 +26,18 @@ import sensorReaders.ValueStore;
 
 public class MainActivity extends AppCompatActivity {
 
+    private AccelerometerSensorReader mAccelerometerSensorWriter;
     private AccelerometerSensorReader mAccelerometerSensorReader;
+    private GyroscopeSensorReader mGyroscopeSensorWriter;
     private GyroscopeSensorReader mGyroscopeSensorReader;
+    private GravitySensorReader mGravitySensorWriter;
     private GravitySensorReader mGravitySensorReader;
+    private RotationalVectorSensorReader mRotationalVectorSensorWriter;
     private RotationalVectorSensorReader mRotationalVectorSensorReader;
-    private LinearAcceleratorSensorReader mLinearAcceleratorSensorReader;
-    private MagnetometerSensorReader mMagnetometerSensorReader;
-    private OrientationSensorReader mOrientationSensorReader;
-    private LightSensorReader mLightSensorReader;
+    private LinearAcceleratorSensorReader mLinearAcceleratorSensorWriter;
+    private MagnetometerSensorReader mMagnetometerSensorWriter;
+    private OrientationSensorReader mOrientationSensorWriter;
+    private LightSensorReader mLightSensorWriter;
     ValueStore mValueStore;
 
 //    private int mInterval = 1000; // 5 seconds by default, can be changed later
@@ -51,7 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
         int sampleRate = 10000;
         int displayRate = 500000;
-        int writeRate = 100000;
+
+        mAccelerometerSensorWriter = ((MyApplication) this.getApplication()).getmAccelerometerSensorReader();
+        mGyroscopeSensorWriter = ((MyApplication) this.getApplication()).getmGyroscopeSensorReader();
+        mGravitySensorWriter = ((MyApplication) this.getApplication()).getmGravitySensorReader();
+        mRotationalVectorSensorWriter = ((MyApplication) this.getApplication()).getmRotationalVectorSensorReader();
+        mLinearAcceleratorSensorWriter = ((MyApplication) this.getApplication()).getmLinearAcceleratorSensorReader();
+        mMagnetometerSensorWriter = ((MyApplication) this.getApplication()).getmMagnetometerSensorReader();
+        mOrientationSensorWriter = ((MyApplication) this.getApplication()).getmOrientationSensorReader();
+        mLightSensorWriter = ((MyApplication) this.getApplication()).getmLightSensorReader();
+
 
         mValueStore = new ValueStore();
         DirectoryAndFile dataFiles = new DirectoryAndFile(this);
@@ -83,54 +96,32 @@ public class MainActivity extends AppCompatActivity {
         rotationalVectorTextView[2] = findViewById(R.id.rotationalVectorZTextView);
         Display3ValuesInTextView rotationalVectorDisplay = new Display3ValuesInTextView(rotationalVectorTextView);
 
-        mAccelerometerSensorReader = new AccelerometerSensorReader(mValueStore,
-                                                                 accelerometerDisplay,
+        mAccelerometerSensorReader = new AccelerometerSensorReader(true,
                                                                  sensorManager,
+                                                                 accelerometerDisplay,
                                                                  sampleRate,
-                                                                 displayRate,
-                                                                 writeRate,
-                                                                 dataFiles.getAccelerometerFile());
-        mGyroscopeSensorReader = new GyroscopeSensorReader(mValueStore,
-                                                         gyroscopeDisplay,
+                                                                 displayRate);
+        mGyroscopeSensorReader = new GyroscopeSensorReader(true,
                                                          sensorManager,
+                                                         gyroscopeDisplay,
                                                          sampleRate,
-                                                         displayRate,
-                                                         writeRate,
-                                                         dataFiles.getGyroscopeFile());
-        mGravitySensorReader = new GravitySensorReader(mValueStore,
-                                                       gravityDisplay,
-                                                       sensorManager,
-                                                       sampleRate,
-                                                       displayRate,
-                                                       writeRate,
-                                                       dataFiles.getGravityFile());
-        mRotationalVectorSensorReader = new RotationalVectorSensorReader(mValueStore,
-                                                                      rotationalVectorDisplay,
+                                                         displayRate);
+        mGravitySensorReader = new GravitySensorReader(true,
+                                                        sensorManager,
+                                                        gravityDisplay,
+                                                        sampleRate,
+                                                        displayRate);
+        mRotationalVectorSensorReader = new RotationalVectorSensorReader(true,
                                                                       sensorManager,
+                                                                      rotationalVectorDisplay,
                                                                       sampleRate,
-                                                                      displayRate,
-                                                                      writeRate,
-                                                                      dataFiles.getRotationalVectorFile());
-        mLinearAcceleratorSensorReader = new LinearAcceleratorSensorReader(mValueStore,
-                                                                            sensorManager,
-                                                                            sampleRate,
-                                                                            writeRate,
-                                                                            dataFiles.getLinearAcceleratorFile());
-        mMagnetometerSensorReader = new MagnetometerSensorReader(mValueStore,
-                                                                sensorManager,
-                                                                sampleRate,
-                                                                writeRate,
-                                                                dataFiles.getMagnetometerFile());
-        mOrientationSensorReader = new OrientationSensorReader(mValueStore,
-                                                                sensorManager,
-                                                                sampleRate,
-                                                                writeRate,
-                                                                dataFiles.getOrientationFile());
-        mLightSensorReader = new LightSensorReader(mValueStore,
-                                                sensorManager,
-                                                sampleRate,
-                                                writeRate,
-                                                dataFiles.getLightFile());
+                                                                      displayRate);
+
+        mAccelerometerSensorReader.open();
+        mGyroscopeSensorReader.open();
+        mGravitySensorReader.open();
+        mRotationalVectorSensorReader.open();
+
     }
 
     private class Display3ValuesInTextView implements DisplaySensorValuesInterface{
@@ -150,30 +141,35 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void startSensors(View view) {
-        mAccelerometerSensorReader.open();
-        mGyroscopeSensorReader.open();
-        mGravitySensorReader.open();
-        mRotationalVectorSensorReader.open();
-        mLinearAcceleratorSensorReader.open();
-        mMagnetometerSensorReader.open();
-        mOrientationSensorReader.open();
-        mLightSensorReader.open();
+        mAccelerometerSensorWriter.open();
+        mGyroscopeSensorWriter.open();
+        mGravitySensorWriter.open();
+        mRotationalVectorSensorWriter.open();
+        mLinearAcceleratorSensorWriter.open();
+        mMagnetometerSensorWriter.open();
+        mOrientationSensorWriter.open();
+        mLightSensorWriter.open();
     //        mLogger.run();
     }
 
     public void endSensors(View view) {
-        mAccelerometerSensorReader.close();
-        mGyroscopeSensorReader.close();
-        mGravitySensorReader.close();
-        mRotationalVectorSensorReader.close();
-        mLinearAcceleratorSensorReader.close();
-        mMagnetometerSensorReader.close();
-        mOrientationSensorReader.close();
-        mLightSensorReader.close();
+        mAccelerometerSensorWriter.close();
+        mGyroscopeSensorWriter.close();
+        mGravitySensorWriter.close();
+        mRotationalVectorSensorWriter.close();
+        mLinearAcceleratorSensorWriter.close();
+        mMagnetometerSensorWriter.close();
+        mOrientationSensorWriter.close();
+        mLightSensorWriter.close();
     //        mHandler.removeCallbacks(mLogger);
     }
 
     public void go2SecondActivity(View view) {
+        mAccelerometerSensorReader.close();
+        mGyroscopeSensorReader.close();
+        mGravitySensorReader.close();
+        mRotationalVectorSensorReader.close();
+
         Intent intent = new Intent(this, SecondActivity.class);
         startActivity(intent);
     }
