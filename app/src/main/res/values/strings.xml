@@ -27,6 +27,14 @@
     <string name="startBtn">Start</string>
     <string name="endBtn">End</string>
     <string name="go2SecondActivityBtn">Go Next</string>
-    <string name="go2FirstActivityBtn">Go Previous</string>
+    <string name="go2FirstActivityBtn">Go First Activity</string>
+    <string name="go2ThirdActivityBtn">Go Network</string>
+    <string name="go2MainActivityBtn">Go First</string>
+    <string name="testNetWorkBtn">Test Network</string>
+    <string name="uploadFileBtn">Upload File</string>
     <string name="title_activity_second">SecondActivity</string>
+    <string name="title_activity_network">NetworkActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

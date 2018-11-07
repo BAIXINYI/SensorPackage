@@ -322,7 +322,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button6"
+        android:id="@+id/go2FirstActivityBtn"
         android:layout_width="wrap_content"
         android:layout_height="49dp"
         android:layout_marginBottom="15dp"
@@ -333,6 +333,21 @@
         android:onClick="go2FirstActivity"
         android:text="@string/go2FirstActivityBtn"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/go2ThirdActivityBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="12dp"
+        android:onClick="go2ThirdActivity"
+        android:text="@string/go2ThirdActivityBtn"
+        app:layout_constraintBottom_toTopOf="@+id/go2FirstActivityBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

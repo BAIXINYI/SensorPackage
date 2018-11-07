@@ -123,4 +123,14 @@ public class SecondActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void go2ThirdActivity(View view) {
+        mMagnetometerSensorReader.close();
+        mOrientationSensorReader.close();
+        mLinearAcceleratorSensorReader.close();
+        mLightSensorReader.close();
+        Intent intent = new Intent(this, NetworkActivity.class);
+        startActivity(intent);
+    }
+
+
 }
