@@ -20,26 +20,31 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Request;
 import okhttp3.Callback;
+import sensorReaders.OkhttpSSLClient;
 
 public class NetworkActivity extends Activity implements Callback {
 
-    private OkHttpClient okHttpClient = new OkHttpClient();
     private String TAG = "This is a tag";
+    private String baseURL = "https://10.148.9.232";
+    private String userId = "1";
     private String responseMessage;
     private Handler mHandler;
+    private OkHttpClient okHttpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network);
 
-        display("to start");
+        display("Network Response Display Field");
 
         mHandler = new Handler(Looper.getMainLooper());
+        OkhttpSSLClient okhttpSSLClient = new OkhttpSSLClient(this, "PPLCorridorServer.pem");
+        okHttpClient = okhttpSSLClient.getClient();
     }
 
     public void testNetwork(View view) throws IOException {
-        Request request = new Request.Builder().url("http:/192.168.0.5:3000").get().build();
+        Request request = new Request.Builder().url(baseURL).get().build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -69,10 +74,12 @@ public class NetworkActivity extends Activity implements Callback {
     }
 
     public void uploadFile(View view) {
+        display("Start Uploading");
+
         String pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/gyroscopeData.csv";
         File file = new File(pathString);
         try {
-            upload("http:/192.168.0.5:3000/uploadfile", file);
+            upload(baseURL + "/uploadfile", file, userId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,7 +87,7 @@ public class NetworkActivity extends Activity implements Callback {
         pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/accelerometerData.csv";
         file = new File(pathString);
         try {
-            upload("http:/192.168.0.5:3000/uploadfile", file);
+            upload(baseURL + "/uploadfile", file, userId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,7 +95,7 @@ public class NetworkActivity extends Activity implements Callback {
         pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/gravityData.csv";
         file = new File(pathString);
         try {
-            upload("http:/192.168.0.5:3000/uploadfile", file);
+            upload(baseURL + "/uploadfile", file, userId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,18 +103,50 @@ public class NetworkActivity extends Activity implements Callback {
         pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/magnetometerData.csv";
         file = new File(pathString);
         try {
-            upload("http:/192.168.0.5:3000/uploadfile", file);
+            upload(baseURL + "/uploadfile", file, userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/linearAcceleratorData.csv";
+        file = new File(pathString);
+        try {
+            upload(baseURL + "/uploadfile", file, userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/lightData.csv";
+        file = new File(pathString);
+        try {
+            upload(baseURL + "/uploadfile", file, userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/rotationalVectorData.csv";
+        file = new File(pathString);
+        try {
+            upload(baseURL + "/uploadfile", file, userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/orientationData.csv";
+        file = new File(pathString);
+        try {
+            upload(baseURL + "/uploadfile", file, userId);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void upload(String url, File file) throws IOException {
+    public void upload(String url, File file, String userId) throws IOException {
         RequestBody formBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(),
                         RequestBody.create(MediaType.parse("text/csv"), file))
-                .addFormDataPart("UserId", "1")
+                .addFormDataPart("UserId", userId)
                 .build();
         Request request = new Request.Builder().url(url).post(formBody).build();
         okHttpClient.newCall(request).enqueue(this);

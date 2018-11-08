@@ -64,16 +64,15 @@ public class MyApplication extends Application {
     private MagnetometerSensorReader mMagnetometerSensorReader;
     private OrientationSensorReader mOrientationSensorReader;
     private LightSensorReader mLightSensorReader;
-    private SensorManager sensorManager;
     ValueStore mValueStore;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         int sampleRate = 10000;
-        int writeRate = 100000;
+        int writeRate = 10000;
 
         mValueStore = new ValueStore();
         DirectoryAndFile dataFiles = new DirectoryAndFile(this);
