@@ -25,7 +25,7 @@ import sensorReaders.OkhttpSSLClient;
 public class NetworkActivity extends Activity implements Callback {
 
     private String TAG = "This is a tag";
-    private String baseURL = "https://10.148.9.232";
+    private String baseURL = "https://10.148.6.152:443";
     private String userId = "1";
     private String responseMessage;
     private Handler mHandler;
@@ -39,7 +39,7 @@ public class NetworkActivity extends Activity implements Callback {
         display("Network Response Display Field");
 
         mHandler = new Handler(Looper.getMainLooper());
-        OkhttpSSLClient okhttpSSLClient = new OkhttpSSLClient(this, "PPLCorridorServer.pem");
+        OkhttpSSLClient okhttpSSLClient = new OkhttpSSLClient(this, "SocialMatric.pem");
         okHttpClient = okhttpSSLClient.getClient();
     }
 
