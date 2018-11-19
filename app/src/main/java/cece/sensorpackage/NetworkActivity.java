@@ -20,7 +20,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Request;
 import okhttp3.Callback;
-import sensorAndFilePackage.OkhttpSSLClient;
+import sensorAndFilePackage.OkHttpSSLClient;
 
 public class NetworkActivity extends Activity implements Callback {
 
@@ -39,8 +39,8 @@ public class NetworkActivity extends Activity implements Callback {
         display("Network Response Display Field");
 
         mHandler = new Handler(Looper.getMainLooper());
-        OkhttpSSLClient okhttpSSLClient = new OkhttpSSLClient(this, "SocialMatric.pem");
-        okHttpClient = okhttpSSLClient.getClient();
+        OkHttpSSLClient okHttpSSLClient = new OkHttpSSLClient(this, "SocialMatric.pem");
+        okHttpClient = okHttpSSLClient.getClient();
     }
 
     public void testNetwork(View view) throws IOException {

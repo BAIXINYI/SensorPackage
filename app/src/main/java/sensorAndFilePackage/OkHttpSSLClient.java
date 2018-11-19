@@ -16,7 +16,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 
-public final class OkhttpSSLClient {
+public final class OkHttpSSLClient {
 
     public OkHttpClient getClient() {
         return client;
@@ -25,7 +25,7 @@ public final class OkhttpSSLClient {
     private OkHttpClient client;
     private String TAG="Okhttp client tag ";
 
-    public OkhttpSSLClient(Context parentContext, String fileName) {
+    public OkHttpSSLClient(Context parentContext, String fileName) {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
