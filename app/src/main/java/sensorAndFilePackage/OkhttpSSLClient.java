@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.content.Context;
 import android.util.Log;

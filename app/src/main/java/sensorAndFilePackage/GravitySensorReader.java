@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,85 +12,83 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class LightSensorReader implements SensorEventListener {
+public class GravitySensorReader implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mLightSensor;
+    private Sensor mGravity;
     private ValueStore mValueStore;
-    private DisplaySensorValuesInterface mLightSensorDisplay;
+    private DisplaySensorValuesInterface mGravityDisplay;
     private int sampleRate;
     private int countDisplayRounds = 0;
     private int displayThreshold = -1;
     private int countWriteRounds = 0;
     private int writeThreshold = -1;
-    private FileWriter lightSensorFileWriter;
-    private File lightSensorFile;
+    private FileWriter gravityFileWriter;
+    private File gravityFile;
     private boolean onlyDisplay=false;
 
-    public LightSensorReader(ValueStore parentValueStore,
-                                     SensorManager parentSensorManager,
-                                     int parentSampleRate) {
+    public GravitySensorReader(ValueStore parentValueStore,
+                                 SensorManager parentSensorManager,
+                                 int parentSampleRate) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         sampleRate = parentSampleRate;
     }
 
-    public LightSensorReader(boolean valueStoreOption,
+    public GravitySensorReader(boolean valueStoreOption,
                                      SensorManager parentSensorManager,
                                      DisplaySensorValuesInterface parentDisplay,
                                      int displayRate,
                                      int parentSampleRate) {
         mSensorManager = parentSensorManager;
-        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
-        mLightSensorDisplay = parentDisplay;
+        mGravityDisplay = parentDisplay;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
         onlyDisplay = valueStoreOption;
     }
 
-    public LightSensorReader(ValueStore parentValueStore,
-                                     SensorManager parentSensorManager,
-                                     int parentSampleRate,
-                                     int writeRate,
-                                     File parentFile) {
+    public GravitySensorReader(ValueStore parentValueStore,
+                                 SensorManager parentSensorManager,
+                                 int parentSampleRate,
+                                 int writeRate,
+                                 File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         sampleRate = parentSampleRate;
-        lightSensorFile = parentFile;
+        gravityFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
     }
 
-    public LightSensorReader(ValueStore parentValueStore,
-                                     DisplaySensorValuesInterface parentDisplay,
-                                     SensorManager parentSensorManager,
-                                     int parentSampleRate,
-                                     int displayRate,
-                                     int writeRate,
-                                     File parentFile) {
+    public GravitySensorReader(ValueStore parentValueStore,
+                                 DisplaySensorValuesInterface parentDisplay,
+                                 SensorManager parentSensorManager,
+                                 int parentSampleRate,
+                                 int displayRate,
+                                 int writeRate,
+                                 File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mLightSensorDisplay = parentDisplay;
-        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mGravityDisplay = parentDisplay;
+        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         sampleRate = parentSampleRate;
-        lightSensorFile = parentFile;
+        gravityFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float[] lightSensorValues = event.values;
-
-        if(!onlyDisplay) {
-            mValueStore.setLightValues(lightSensorValues);
+        float[] gravityValues = event.values;
+        if( !onlyDisplay ) {
+            mValueStore.setGravityValues(gravityValues);
         }
-
         if (displayThreshold > 0) {
             countDisplayRounds += 1;
             if (countDisplayRounds == displayThreshold) {
-                display(lightSensorValues);
+                display(gravityValues);
                 countDisplayRounds = 0;
             }
         }
@@ -100,11 +98,13 @@ public class LightSensorReader implements SensorEventListener {
             if (countWriteRounds == writeThreshold) {
                 countWriteRounds = 0;
                 try {
-                    lightSensorFileWriter.append(
-                            String.format("%s,%s\n",
+                    gravityFileWriter.append(
+                            String.format("%s,%s,%s,%s\n",
                                     String.valueOf(System.currentTimeMillis()),
-                                    String.valueOf(lightSensorValues[0])));
-                    lightSensorFileWriter.flush();
+                                    String.valueOf(gravityValues[0]),
+                                    String.valueOf(gravityValues[1]),
+                                    String.valueOf(gravityValues[2])));
+                    gravityFileWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -120,10 +120,10 @@ public class LightSensorReader implements SensorEventListener {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void open() {
-        mSensorManager.registerListener(this, mLightSensor, sampleRate, sampleRate);
-        if(!onlyDisplay){
+        mSensorManager.registerListener(this, mGravity, sampleRate, sampleRate);
+        if(!onlyDisplay) {
             try {
-                lightSensorFileWriter = new FileWriter(lightSensorFile, true);
+                gravityFileWriter = new FileWriter(gravityFile, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,7 +133,7 @@ public class LightSensorReader implements SensorEventListener {
     public void close() {
         if(!onlyDisplay) {
             try {
-                lightSensorFileWriter.close();
+                gravityFileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -143,7 +143,7 @@ public class LightSensorReader implements SensorEventListener {
     }
 
     private void display(float[] sensorValues) {
-        mLightSensorDisplay.execute(sensorValues);
+        mGravityDisplay.execute(sensorValues);
     }
 
 }

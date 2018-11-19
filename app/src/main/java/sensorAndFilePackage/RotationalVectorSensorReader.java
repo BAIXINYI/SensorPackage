@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,83 +12,83 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class GravitySensorReader implements SensorEventListener {
+public class RotationalVectorSensorReader implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mGravity;
+    private Sensor mRotationalVectorSensor;
     private ValueStore mValueStore;
-    private DisplaySensorValuesInterface mGravityDisplay;
+    private DisplaySensorValuesInterface mRotationalVectorDisplay;
     private int sampleRate;
     private int countDisplayRounds = 0;
     private int displayThreshold = -1;
     private int countWriteRounds = 0;
     private int writeThreshold = -1;
-    private FileWriter gravityFileWriter;
-    private File gravityFile;
+    private FileWriter rotationalVectorFileWriter;
+    private File rotationalVectorFile;
     private boolean onlyDisplay=false;
 
-    public GravitySensorReader(ValueStore parentValueStore,
-                                 SensorManager parentSensorManager,
-                                 int parentSampleRate) {
+    public RotationalVectorSensorReader(ValueStore parentValueStore,
+                               SensorManager parentSensorManager,
+                               int parentSampleRate) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sampleRate = parentSampleRate;
     }
 
-    public GravitySensorReader(boolean valueStoreOption,
+    public RotationalVectorSensorReader(boolean valueStoreOption,
                                      SensorManager parentSensorManager,
                                      DisplaySensorValuesInterface parentDisplay,
                                      int displayRate,
                                      int parentSampleRate) {
         mSensorManager = parentSensorManager;
-        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
-        mGravityDisplay = parentDisplay;
+        mRotationalVectorDisplay = parentDisplay;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
         onlyDisplay = valueStoreOption;
     }
 
-    public GravitySensorReader(ValueStore parentValueStore,
-                                 SensorManager parentSensorManager,
-                                 int parentSampleRate,
-                                 int writeRate,
-                                 File parentFile) {
+    public RotationalVectorSensorReader(ValueStore parentValueStore,
+                               SensorManager parentSensorManager,
+                               int parentSampleRate,
+                               int writeRate,
+                               File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sampleRate = parentSampleRate;
-        gravityFile = parentFile;
+        rotationalVectorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
     }
 
-    public GravitySensorReader(ValueStore parentValueStore,
-                                 DisplaySensorValuesInterface parentDisplay,
-                                 SensorManager parentSensorManager,
-                                 int parentSampleRate,
-                                 int displayRate,
-                                 int writeRate,
-                                 File parentFile) {
+    public RotationalVectorSensorReader(ValueStore parentValueStore,
+                               DisplaySensorValuesInterface parentDisplay,
+                               SensorManager parentSensorManager,
+                               int parentSampleRate,
+                               int displayRate,
+                               int writeRate,
+                               File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGravityDisplay = parentDisplay;
-        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        mRotationalVectorDisplay = parentDisplay;
+        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sampleRate = parentSampleRate;
-        gravityFile = parentFile;
+        rotationalVectorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float[] gravityValues = event.values;
-        if( !onlyDisplay ) {
-            mValueStore.setGravityValues(gravityValues);
+        float[] rotaionalVectorValues = event.values;
+        if(!onlyDisplay) {
+            mValueStore.setRotationalVectorValues(rotaionalVectorValues);
         }
         if (displayThreshold > 0) {
             countDisplayRounds += 1;
             if (countDisplayRounds == displayThreshold) {
-                display(gravityValues);
+                display(rotaionalVectorValues);
                 countDisplayRounds = 0;
             }
         }
@@ -98,13 +98,13 @@ public class GravitySensorReader implements SensorEventListener {
             if (countWriteRounds == writeThreshold) {
                 countWriteRounds = 0;
                 try {
-                    gravityFileWriter.append(
+                    rotationalVectorFileWriter.append(
                             String.format("%s,%s,%s,%s\n",
                                     String.valueOf(System.currentTimeMillis()),
-                                    String.valueOf(gravityValues[0]),
-                                    String.valueOf(gravityValues[1]),
-                                    String.valueOf(gravityValues[2])));
-                    gravityFileWriter.flush();
+                                    String.valueOf(rotaionalVectorValues[0]),
+                                    String.valueOf(rotaionalVectorValues[1]),
+                                    String.valueOf(rotaionalVectorValues[2])));
+                    rotationalVectorFileWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -120,10 +120,10 @@ public class GravitySensorReader implements SensorEventListener {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void open() {
-        mSensorManager.registerListener(this, mGravity, sampleRate, sampleRate);
+        mSensorManager.registerListener(this, mRotationalVectorSensor, sampleRate, sampleRate);
         if(!onlyDisplay) {
             try {
-                gravityFileWriter = new FileWriter(gravityFile, true);
+                rotationalVectorFileWriter = new FileWriter(rotationalVectorFile, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,7 +133,7 @@ public class GravitySensorReader implements SensorEventListener {
     public void close() {
         if(!onlyDisplay) {
             try {
-                gravityFileWriter.close();
+                rotationalVectorFileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -143,7 +143,7 @@ public class GravitySensorReader implements SensorEventListener {
     }
 
     private void display(float[] sensorValues) {
-        mGravityDisplay.execute(sensorValues);
+        mRotationalVectorDisplay.execute(sensorValues);
     }
 
 }

@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,85 +12,83 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class MagnetometerSensorReader implements SensorEventListener {
+public class OrientationSensorReader implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mMagnetometer;
+    private Sensor mOrientationSensor;
     private ValueStore mValueStore;
-    private DisplaySensorValuesInterface mMagnetometerDisplay;
+    private DisplaySensorValuesInterface mOrientationSensorDisplay;
     private int sampleRate;
     private int countDisplayRounds = 0;
     private int displayThreshold = -1;
     private int countWriteRounds = 0;
     private int writeThreshold = -1;
-    private FileWriter magnetometerFileWriter;
-    private File magnetometerFile;
-    private boolean onlyDisplay = false;
+    private FileWriter orientationSensorFileWriter;
+    private File orientationSensorFile;
+    private boolean onlyDisplay=false;
 
-    public MagnetometerSensorReader(ValueStore parentValueStore,
-                                    SensorManager parentSensorManager,
-                                    int parentSampleRate) {
+    public OrientationSensorReader(ValueStore parentValueStore,
+                                         SensorManager parentSensorManager,
+                                         int parentSampleRate) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         sampleRate = parentSampleRate;
     }
 
-    public MagnetometerSensorReader(boolean valueStoreOption,
+    public OrientationSensorReader(boolean valueStoreOption,
                                     SensorManager parentSensorManager,
                                     DisplaySensorValuesInterface parentDisplay,
                                     int displayRate,
                                     int parentSampleRate) {
         mSensorManager = parentSensorManager;
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         sampleRate = parentSampleRate;
-        mMagnetometerDisplay = parentDisplay;
+        mOrientationSensorDisplay = parentDisplay;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
         onlyDisplay = valueStoreOption;
     }
 
-    public MagnetometerSensorReader(ValueStore parentValueStore,
-                                    SensorManager parentSensorManager,
-                                    int parentSampleRate,
-                                    int writeRate,
-                                    File parentFile) {
+    public OrientationSensorReader(ValueStore parentValueStore,
+                                     SensorManager parentSensorManager,
+                                     int parentSampleRate,
+                                     int writeRate,
+                                     File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         sampleRate = parentSampleRate;
-        magnetometerFile = parentFile;
+        orientationSensorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
     }
 
-    public MagnetometerSensorReader(ValueStore parentValueStore,
-                                    DisplaySensorValuesInterface parentDisplay,
-                                    SensorManager parentSensorManager,
-                                    int parentSampleRate,
-                                    int displayRate,
-                                    int writeRate,
-                                    File parentFile) {
+    public OrientationSensorReader(ValueStore parentValueStore,
+                                         DisplaySensorValuesInterface parentDisplay,
+                                         SensorManager parentSensorManager,
+                                         int parentSampleRate,
+                                         int displayRate,
+                                         int writeRate,
+                                         File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mMagnetometerDisplay = parentDisplay;
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mOrientationSensorDisplay = parentDisplay;
+        mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         sampleRate = parentSampleRate;
-        magnetometerFile = parentFile;
+        orientationSensorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float[] magnetometerValues = event.values;
-
-        if(!onlyDisplay) {
-            mValueStore.setMagnetometerValues(magnetometerValues);
+        float[] orientationSensorValues = event.values;
+        if( !onlyDisplay ){
+            mValueStore.setOrientationValues(orientationSensorValues);
         }
-
         if (displayThreshold > 0) {
             countDisplayRounds += 1;
             if (countDisplayRounds == displayThreshold) {
-                display(magnetometerValues);
+                display(orientationSensorValues);
                 countDisplayRounds = 0;
             }
         }
@@ -100,13 +98,13 @@ public class MagnetometerSensorReader implements SensorEventListener {
             if (countWriteRounds == writeThreshold) {
                 countWriteRounds = 0;
                 try {
-                    magnetometerFileWriter.append(
+                    orientationSensorFileWriter.append(
                             String.format("%s,%s,%s,%s\n",
                                     String.valueOf(System.currentTimeMillis()),
-                                    String.valueOf(magnetometerValues[0]),
-                                    String.valueOf(magnetometerValues[1]),
-                                    String.valueOf(magnetometerValues[2])));
-                    magnetometerFileWriter.flush();
+                                    String.valueOf(orientationSensorValues[0]),
+                                    String.valueOf(orientationSensorValues[1]),
+                                    String.valueOf(orientationSensorValues[2])));
+                    orientationSensorFileWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -122,10 +120,10 @@ public class MagnetometerSensorReader implements SensorEventListener {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void open() {
-        mSensorManager.registerListener(this, mMagnetometer, sampleRate, sampleRate);
+        mSensorManager.registerListener(this, mOrientationSensor, sampleRate, sampleRate);
         if(!onlyDisplay) {
             try {
-                magnetometerFileWriter = new FileWriter(magnetometerFile, true);
+                orientationSensorFileWriter = new FileWriter(orientationSensorFile, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -135,7 +133,7 @@ public class MagnetometerSensorReader implements SensorEventListener {
     public void close() {
         if(!onlyDisplay) {
             try {
-                magnetometerFileWriter.close();
+                orientationSensorFileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -145,18 +143,8 @@ public class MagnetometerSensorReader implements SensorEventListener {
     }
 
     private void display(float[] sensorValues) {
-        mMagnetometerDisplay.execute(sensorValues);
+        mOrientationSensorDisplay.execute(sensorValues);
     }
-
-//    private void enableDisplay(int displayRate, DisplaySensorValuesInterface parentDisplay) {
-//        mMagnetometerDisplay = parentDisplay;
-//        displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
-//    }
-//
-//    private void disableDisplay() {
-//        countDisplayRounds = 0;
-//        displayThreshold = -1;
-//    }
 
 }
 

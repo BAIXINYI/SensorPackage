@@ -4,20 +4,18 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.SensorManager;
-import android.os.Bundle;
-import android.widget.TextView;
 
-import sensorReaders.AccelerometerSensorReader;
-import sensorReaders.DirectoryAndFile;
-import sensorReaders.GravitySensorReader;
-import sensorReaders.GyroscopeSensorReader;
-import sensorReaders.LightSensorReader;
-import sensorReaders.LinearAcceleratorSensorReader;
-import sensorReaders.MagnetometerSensorReader;
-import sensorReaders.OrientationSensorReader;
-import sensorReaders.RotationalVectorSensorReader;
-import sensorReaders.SensorPrinter;
-import sensorReaders.ValueStore;
+import sensorAndFilePackage.AccelerometerSensorReader;
+import sensorAndFilePackage.DirectoryAndFile;
+import sensorAndFilePackage.GravitySensorReader;
+import sensorAndFilePackage.GyroscopeSensorReader;
+import sensorAndFilePackage.LightSensorReader;
+import sensorAndFilePackage.LinearAcceleratorSensorReader;
+import sensorAndFilePackage.MagnetometerSensorReader;
+import sensorAndFilePackage.OrientationSensorReader;
+import sensorAndFilePackage.RotationalVectorSensorReader;
+import sensorAndFilePackage.SensorPrinter;
+import sensorAndFilePackage.ValueStore;
 
 public class MyApplication extends Application {
     public AccelerometerSensorReader getmAccelerometerSensorReader() {

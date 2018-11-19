@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,57 +12,57 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class GyroscopeSensorReader implements SensorEventListener {
+public class AccelerometerSensorReader implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mGyroscope;
+    private Sensor mAccelerometer;
     private ValueStore mValueStore;
-    private DisplaySensorValuesInterface mGyroscopeDisplay;
+    private DisplaySensorValuesInterface mAccelerometerDisplay;
     private int sampleRate;
     private int countDisplayRounds = 0;
     private int displayThreshold = -1;
     private int countWriteRounds = 0;
     private int writeThreshold = -1;
-    private FileWriter gyroscopeFileWriter;
-    private File gyroscopeFile;
+    private FileWriter accelerometerFileWriter;
+    private File accelerometerFile;
     private boolean onlyDisplay=false;
 
-    public GyroscopeSensorReader(ValueStore parentValueStore,
+    public AccelerometerSensorReader(ValueStore parentValueStore,
                                      SensorManager parentSensorManager,
                                      int parentSampleRate) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
     }
 
-    public GyroscopeSensorReader(boolean valueStoreOption,
-                                     SensorManager parentSensorManager,
-                                     DisplaySensorValuesInterface parentDisplay,
-                                     int displayRate,
-                                     int parentSampleRate) {
+    public AccelerometerSensorReader(boolean valueStoreOption,
+                                    SensorManager parentSensorManager,
+                                    DisplaySensorValuesInterface parentDisplay,
+                                    int displayRate,
+                                    int parentSampleRate) {
         mSensorManager = parentSensorManager;
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
-        mGyroscopeDisplay = parentDisplay;
+        mAccelerometerDisplay = parentDisplay;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
         onlyDisplay = valueStoreOption;
     }
 
-    public GyroscopeSensorReader(ValueStore parentValueStore,
+    public AccelerometerSensorReader(ValueStore parentValueStore,
                                      SensorManager parentSensorManager,
                                      int parentSampleRate,
                                      int writeRate,
                                      File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
-        gyroscopeFile = parentFile;
+        accelerometerFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
     }
 
-    public GyroscopeSensorReader(ValueStore parentValueStore,
+    public AccelerometerSensorReader(ValueStore parentValueStore,
                                      DisplaySensorValuesInterface parentDisplay,
                                      SensorManager parentSensorManager,
                                      int parentSampleRate,
@@ -71,24 +71,26 @@ public class GyroscopeSensorReader implements SensorEventListener {
                                      File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mGyroscopeDisplay = parentDisplay;
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mAccelerometerDisplay = parentDisplay;
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sampleRate = parentSampleRate;
-        gyroscopeFile = parentFile;
+        accelerometerFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float[] gyroscopeValues = event.values;
-        if( !onlyDisplay ) {
-            mValueStore.setGyroscopeValues(gyroscopeValues);
+        float[] accelerometerValues = event.values;
+
+        if(!onlyDisplay) {
+            mValueStore.setAccelerometerValues(accelerometerValues);
         }
+
         if (displayThreshold > 0) {
             countDisplayRounds += 1;
             if (countDisplayRounds == displayThreshold) {
-                display(gyroscopeValues);
+                display(accelerometerValues);
                 countDisplayRounds = 0;
             }
         }
@@ -98,13 +100,13 @@ public class GyroscopeSensorReader implements SensorEventListener {
             if (countWriteRounds == writeThreshold) {
                 countWriteRounds = 0;
                 try {
-                    gyroscopeFileWriter.append(
+                    accelerometerFileWriter.append(
                             String.format("%s,%s,%s,%s\n",
                                     String.valueOf(System.currentTimeMillis()),
-                                    String.valueOf(gyroscopeValues[0]),
-                                    String.valueOf(gyroscopeValues[1]),
-                                    String.valueOf(gyroscopeValues[2])));
-                    gyroscopeFileWriter.flush();
+                                    String.valueOf(accelerometerValues[0]),
+                                    String.valueOf(accelerometerValues[1]),
+                                    String.valueOf(accelerometerValues[2])));
+                    accelerometerFileWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -120,10 +122,10 @@ public class GyroscopeSensorReader implements SensorEventListener {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void open() {
-        mSensorManager.registerListener(this, mGyroscope, sampleRate, sampleRate);
-        if(!onlyDisplay) {
+        mSensorManager.registerListener(this, mAccelerometer, sampleRate, sampleRate);
+        if(!onlyDisplay){
             try {
-                gyroscopeFileWriter = new FileWriter(gyroscopeFile, true);
+                accelerometerFileWriter = new FileWriter(accelerometerFile, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,17 +135,16 @@ public class GyroscopeSensorReader implements SensorEventListener {
     public void close() {
         if(!onlyDisplay) {
             try {
-                gyroscopeFileWriter.close();
+                accelerometerFileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
         mSensorManager.unregisterListener(this);
     }
 
     private void display(float[] sensorValues) {
-        mGyroscopeDisplay.execute(sensorValues);
+        mAccelerometerDisplay.execute(sensorValues);
     }
 
 }

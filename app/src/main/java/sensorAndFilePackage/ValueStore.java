@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 public class ValueStore {
 

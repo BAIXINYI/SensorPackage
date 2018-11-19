@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorManager;

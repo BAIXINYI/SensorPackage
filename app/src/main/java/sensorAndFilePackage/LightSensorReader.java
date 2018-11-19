@@ -1,4 +1,4 @@
-package sensorReaders;
+package sensorAndFilePackage;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,83 +12,85 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class RotationalVectorSensorReader implements SensorEventListener {
+public class LightSensorReader implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mRotationalVectorSensor;
+    private Sensor mLightSensor;
     private ValueStore mValueStore;
-    private DisplaySensorValuesInterface mRotationalVectorDisplay;
+    private DisplaySensorValuesInterface mLightSensorDisplay;
     private int sampleRate;
     private int countDisplayRounds = 0;
     private int displayThreshold = -1;
     private int countWriteRounds = 0;
     private int writeThreshold = -1;
-    private FileWriter rotationalVectorFileWriter;
-    private File rotationalVectorFile;
+    private FileWriter lightSensorFileWriter;
+    private File lightSensorFile;
     private boolean onlyDisplay=false;
 
-    public RotationalVectorSensorReader(ValueStore parentValueStore,
-                               SensorManager parentSensorManager,
-                               int parentSampleRate) {
+    public LightSensorReader(ValueStore parentValueStore,
+                                     SensorManager parentSensorManager,
+                                     int parentSampleRate) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         sampleRate = parentSampleRate;
     }
 
-    public RotationalVectorSensorReader(boolean valueStoreOption,
+    public LightSensorReader(boolean valueStoreOption,
                                      SensorManager parentSensorManager,
                                      DisplaySensorValuesInterface parentDisplay,
                                      int displayRate,
                                      int parentSampleRate) {
         mSensorManager = parentSensorManager;
-        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         sampleRate = parentSampleRate;
-        mRotationalVectorDisplay = parentDisplay;
+        mLightSensorDisplay = parentDisplay;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
         onlyDisplay = valueStoreOption;
     }
 
-    public RotationalVectorSensorReader(ValueStore parentValueStore,
-                               SensorManager parentSensorManager,
-                               int parentSampleRate,
-                               int writeRate,
-                               File parentFile) {
+    public LightSensorReader(ValueStore parentValueStore,
+                                     SensorManager parentSensorManager,
+                                     int parentSampleRate,
+                                     int writeRate,
+                                     File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         sampleRate = parentSampleRate;
-        rotationalVectorFile = parentFile;
+        lightSensorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
     }
 
-    public RotationalVectorSensorReader(ValueStore parentValueStore,
-                               DisplaySensorValuesInterface parentDisplay,
-                               SensorManager parentSensorManager,
-                               int parentSampleRate,
-                               int displayRate,
-                               int writeRate,
-                               File parentFile) {
+    public LightSensorReader(ValueStore parentValueStore,
+                                     DisplaySensorValuesInterface parentDisplay,
+                                     SensorManager parentSensorManager,
+                                     int parentSampleRate,
+                                     int displayRate,
+                                     int writeRate,
+                                     File parentFile) {
         mSensorManager = parentSensorManager;
         mValueStore = parentValueStore;
-        mRotationalVectorDisplay = parentDisplay;
-        mRotationalVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mLightSensorDisplay = parentDisplay;
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         sampleRate = parentSampleRate;
-        rotationalVectorFile = parentFile;
+        lightSensorFile = parentFile;
         writeThreshold = writeRate >= sampleRate ? writeRate/sampleRate : 1;
         displayThreshold = displayRate >= sampleRate ? displayRate/sampleRate : 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float[] rotaionalVectorValues = event.values;
+        float[] lightSensorValues = event.values;
+
         if(!onlyDisplay) {
-            mValueStore.setRotationalVectorValues(rotaionalVectorValues);
+            mValueStore.setLightValues(lightSensorValues);
         }
+
         if (displayThreshold > 0) {
             countDisplayRounds += 1;
             if (countDisplayRounds == displayThreshold) {
-                display(rotaionalVectorValues);
+                display(lightSensorValues);
                 countDisplayRounds = 0;
             }
         }
@@ -98,13 +100,11 @@ public class RotationalVectorSensorReader implements SensorEventListener {
             if (countWriteRounds == writeThreshold) {
                 countWriteRounds = 0;
                 try {
-                    rotationalVectorFileWriter.append(
-                            String.format("%s,%s,%s,%s\n",
+                    lightSensorFileWriter.append(
+                            String.format("%s,%s\n",
                                     String.valueOf(System.currentTimeMillis()),
-                                    String.valueOf(rotaionalVectorValues[0]),
-                                    String.valueOf(rotaionalVectorValues[1]),
-                                    String.valueOf(rotaionalVectorValues[2])));
-                    rotationalVectorFileWriter.flush();
+                                    String.valueOf(lightSensorValues[0])));
+                    lightSensorFileWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -120,10 +120,10 @@ public class RotationalVectorSensorReader implements SensorEventListener {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void open() {
-        mSensorManager.registerListener(this, mRotationalVectorSensor, sampleRate, sampleRate);
-        if(!onlyDisplay) {
+        mSensorManager.registerListener(this, mLightSensor, sampleRate, sampleRate);
+        if(!onlyDisplay){
             try {
-                rotationalVectorFileWriter = new FileWriter(rotationalVectorFile, true);
+                lightSensorFileWriter = new FileWriter(lightSensorFile, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,7 +133,7 @@ public class RotationalVectorSensorReader implements SensorEventListener {
     public void close() {
         if(!onlyDisplay) {
             try {
-                rotationalVectorFileWriter.close();
+                lightSensorFileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -143,7 +143,7 @@ public class RotationalVectorSensorReader implements SensorEventListener {
     }
 
     private void display(float[] sensorValues) {
-        mRotationalVectorDisplay.execute(sensorValues);
+        mLightSensorDisplay.execute(sensorValues);
     }
 
 }

@@ -11,18 +11,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import sensorReaders.AccelerometerSensorReader;
-import sensorReaders.LightSensorReader;
-import sensorReaders.MagnetometerSensorReader;
-import sensorReaders.LinearAcceleratorSensorReader;
-import sensorReaders.DirectoryAndFile;
-import sensorReaders.DisplaySensorValuesInterface;
-import sensorReaders.GravitySensorReader;
-import sensorReaders.GyroscopeSensorReader;
-import sensorReaders.OrientationSensorReader;
-import sensorReaders.RotationalVectorSensorReader;
-import sensorReaders.SensorPrinter;
-import sensorReaders.ValueStore;
+import sensorAndFilePackage.AccelerometerSensorReader;
+import sensorAndFilePackage.LightSensorReader;
+import sensorAndFilePackage.MagnetometerSensorReader;
+import sensorAndFilePackage.LinearAcceleratorSensorReader;
+import sensorAndFilePackage.DirectoryAndFile;
+import sensorAndFilePackage.DisplaySensorValuesInterface;
+import sensorAndFilePackage.GravitySensorReader;
+import sensorAndFilePackage.GyroscopeSensorReader;
+import sensorAndFilePackage.OrientationSensorReader;
+import sensorAndFilePackage.RotationalVectorSensorReader;
+import sensorAndFilePackage.SensorPrinter;
+import sensorAndFilePackage.ValueStore;
 
 public class MainActivity extends AppCompatActivity {
 

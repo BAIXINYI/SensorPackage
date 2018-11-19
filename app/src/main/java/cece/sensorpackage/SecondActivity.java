@@ -11,11 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import sensorReaders.DisplaySensorValuesInterface;
-import sensorReaders.LightSensorReader;
-import sensorReaders.LinearAcceleratorSensorReader;
-import sensorReaders.MagnetometerSensorReader;
-import sensorReaders.OrientationSensorReader;
+import sensorAndFilePackage.DisplaySensorValuesInterface;
+import sensorAndFilePackage.LightSensorReader;
+import sensorAndFilePackage.LinearAcceleratorSensorReader;
+import sensorAndFilePackage.MagnetometerSensorReader;
+import sensorAndFilePackage.OrientationSensorReader;
 
 
 public class SecondActivity extends AppCompatActivity {
