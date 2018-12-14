@@ -7,7 +7,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +28,7 @@ import sensorAndFilePackage.OkHttpSSLClient;
 public class NetworkActivity extends Activity implements Callback {
 
     private String TAG = "This is a tag";
-    private String baseURL = "https://192.168.0.5:443";
-    private String userId = "1";
+    private String baseURL = "https://10.148.7.249";
     private String responseMessage;
     private Handler mHandler;
     private OkHttpClient okHttpClient;
@@ -75,6 +77,11 @@ public class NetworkActivity extends Activity implements Callback {
 
     public void uploadFile(View view) {
         display("Start Uploading");
+        EditText userIDTextField= (EditText) findViewById(R.id.userIDPlainText);
+        String userId = userIDTextField.getText().toString();
+        if (userId.equals("")) {
+            userId = "default";
+        }
 
         String pathString = this.getExternalFilesDir(null).toString() + "/SENSOR_DATA/gyroscopeData.csv";
         File file = new File(pathString);
